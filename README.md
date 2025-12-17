@@ -33,5 +33,16 @@ python src/http_mcp_client.py --tool list
 
 
 ### Deploy
-cd blaxel
+Still in repo's root:
+Install the Blaxel's bl app
+
+Edit the blaxel.toml if required
+
+Run: bl deploy
+(It verifies, builds and uploads the Docker image, then run the mcp server in their platform using the name set in blaxel.toml)
+
+### Test
+export BEARER_TOKEN=""
+export SERVER_URL="https://run.blaxel.ai/momrose/functions/fastmcp2/mcp"
+python src/ttp_mcp_client.py --tool list --bearer-token  $BEARER_TOKEN
 

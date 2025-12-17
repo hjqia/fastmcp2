@@ -41,6 +41,9 @@ Edit the blaxel.toml if required
 Run: bl deploy
 (It verifies, builds and uploads the Docker image, then run the mcp server in their platform using the name set in blaxel.toml)
 
+You can monitor instance using:
+bl logs functions fastmcp2 -f   (-f for continuous logging)
+
 ### Test
 export BEARER_TOKEN=""
 export SERVER_URL="https://run.blaxel.ai/momrose/functions/fastmcp2/mcp"

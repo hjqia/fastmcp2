@@ -1,3 +1,4 @@
+name  = "fastmcp2"
 type = "function"
 
 [runtime]

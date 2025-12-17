@@ -20,7 +20,7 @@ from fastmcp.exceptions import ToolError
 
 logging.basicConfig(level=logging.INFO)
 
-DEFAULT_SERVER_URL = os.getenv("SERVER_URL", "http://127.0.0.1:8000/mcp")
+DEFAULT_SERVER_URL = os.getenv("SERVER_URL", "http://127.0.0.1:1338/mcp")
 
 
 async def probe_endpoint(httpx_factory, server_url: str) -> None:

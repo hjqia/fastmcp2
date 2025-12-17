@@ -59,7 +59,9 @@ async def choose_action(ctx: Context) -> str:
 
 
 def main() -> None:
-    mcp.run(transport="http")
+    host = os.getenv("HOST", "0.0.0.0")
+    port = os.getenv("PORT", 1338)
+    mcp.run(transport="http", host=host, port=port)
 
 
 if __name__ == "__main__":

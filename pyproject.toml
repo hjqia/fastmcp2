@@ -1,8 +1,9 @@
 [project]
-name = "lightrag-hku"
+name = "mymcp2"
 dynamic = ["version"]
 requires-python = "==3.12.*"
 
 dependencies = [
-"fastmcp==2.14.0"
+"fastmcp==2.14.0",
+"httpx[http2]"
 ]

@@ -12,4 +12,4 @@ RUN uv sync --frozen --no-dev
 
 EXPOSE 8000
 
-CMD ["uv", "run", "http_task_server.py"]
+CMD ["uv", "run", "src/http_mcp_server.py"]

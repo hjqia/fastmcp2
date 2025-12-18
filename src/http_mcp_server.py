@@ -33,6 +33,13 @@ mcp = FastMCP(
 )
 
 
+@mcp.tool()
+# async def hello_name(name: Annotated[str, "The name to greet"]) -> str:
+async def hello_name(name: str) -> str:
+    """Returns a greeting message using name."""
+    return f'hello {name}'
+
+
 @mcp.tool(task=TaskConfig(mode="required"))
 async def slow_task(
     duration: Annotated[int, "How many seconds to run"],

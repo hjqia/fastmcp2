@@ -29,7 +29,9 @@ The `receive_file` tool accepts an MCP resource attachment (embedded resource or
 
 
 #### To execute code:
+Assisted by Gemini (Conversation checkpoint saved with tag: code_execution.md.)
 
+UNSAFE OPTION: RUN ANY CODE IN SERVER
 python src/http_mcp_client.py --tool run_python --script "import os; print(os.getcwd())"
 
 Run a file:
@@ -39,6 +41,17 @@ echo "print('Hello from file!')" > test_script.py
 python src/http_mcp_client.py --tool run_python --script test_script.py
 
 
+ANTHROPIC APPROACH: RUN CODE LOCALLY
+https://www.anthropic.com/engineering/code-execution-with-mcp
+
+python src/http_mcp_client.py --generate
+python src/http_mcp_client.py --execute-local --script "from mcp_proxies.mcp_server import slow_task;print(slow_task(duration=2))"
+python src/http_mcp_client.py --execute-local --script test_local.py
+
+
+CLOUDFARE APPROACH: USE PROXY TO RUN CODE IN SANDBOX
+https://blog.cloudflare.com/code-mode/
+https://github.com/jx-codes/lootbox
 
 ## Blaxel
 ### Create and test Docker image

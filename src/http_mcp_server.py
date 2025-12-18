@@ -5,10 +5,14 @@ Run with:
 """
 
 import asyncio
+import base64
 import logging
 import os
+from pathlib import Path
 from typing import Annotated
+from urllib.parse import urlparse
 
+import mcp.types as mcp_types
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends, Progress
 from fastmcp.server.tasks import TaskConfig
@@ -56,6 +60,45 @@ async def choose_action(ctx: Context) -> str:
     if result.action == "decline":
         return "Declined!"
     return "Cancelled!"
+
+
+@mcp.tool
+async def receive_file(
+    uploaded_file: Annotated[
+        mcp_types.EmbeddedResource | mcp_types.ResourceLink,
+        "File uploaded by the client",
+    ],
+    ctx: Context,
+) -> str:
+    """Store an uploaded file and report where it was saved."""
+
+    if isinstance(uploaded_file, mcp_types.ResourceLink):
+        contents = await ctx.read_resource(str(uploaded_file.uri))
+        if not contents:
+            raise ValueError("No content returned for the provided resource link")
+        resource = contents[0]
+        source_uri = uploaded_file.uri
+    else:
+        resource = uploaded_file.resource
+        source_uri = uploaded_file.resource.uri
+
+    if isinstance(resource, mcp_types.TextResourceContents):
+        data = resource.text.encode()
+        mime_type = resource.mimeType
+    elif isinstance(resource, mcp_types.BlobResourceContents):
+        data = base64.b64decode(resource.blob)
+        mime_type = resource.mimeType
+    else:
+        raise ValueError(f"Unsupported resource type: {type(resource)!r}")
+
+    # Use only the filename component to avoid path traversal
+    name_hint = Path(urlparse(str(source_uri)).path).name or "uploaded.bin"
+    upload_dir = Path(os.getenv("UPLOAD_DIR", "/tmp/mcp_uploads"))
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    destination = upload_dir / name_hint
+    destination.write_bytes(data)
+
+    return f"Saved {destination} ({mime_type}, {destination.stat().st_size} bytes)"
 
 
 def main() -> None:

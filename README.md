@@ -22,6 +22,10 @@ python src/http_mcp_client.py --tool slow_task --duration 5
 or,
 python src/http_mcp_client.py --tool choose_action
 
+To upload a local file:
+python src/http_mcp_client.py --tool receive_file --upload-file /path/to/file.ext
+
+The `receive_file` tool accepts an MCP resource attachment (embedded resource or resource link). Uploaded files are stored in `/tmp/mcp_uploads` by default; set `UPLOAD_DIR` to change where files are written.
 
 ## Blaxel
 ### Create and test Docker image
@@ -48,4 +52,3 @@ bl logs functions fastmcp2 -f   (-f for continuous logging)
 export BEARER_TOKEN=""
 export SERVER_URL="https://run.blaxel.ai/momrose/functions/fastmcp2/mcp"
 python src/ttp_mcp_client.py --tool list --bearer-token  $BEARER_TOKEN
-

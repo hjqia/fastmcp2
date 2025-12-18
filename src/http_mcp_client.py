@@ -17,6 +17,7 @@ from fastmcp import Client
 from fastmcp.client import StreamableHttpTransport
 from fastmcp.client.elicitation import ElicitResult
 from fastmcp.exceptions import ToolError
+from fastmcp.utilities.types import File as MCPFile
 
 logging.basicConfig(level=logging.INFO)
 
@@ -88,7 +89,24 @@ async def run_generic_tool(client: Client, name: str) -> None:
     print(f"Tool '{name}' result:", result)
 
 
-async def main(tool: str, duration: int, probe: bool, bearer_token: str | None, server_url: str) -> None:
+async def run_receive_file(client: Client, path: str) -> None:
+    """Send a local file to the receive_file tool."""
+    if not path:
+        raise ValueError("A file path is required for receive_file")
+
+    resource = MCPFile(path=path).to_resource_content()
+    result = await client.call_tool("receive_file", {"uploaded_file": resource})
+    print("receive_file result:", result)
+
+
+async def main(
+    tool: str,
+    duration: int,
+    probe: bool,
+    bearer_token: str | None,
+    server_url: str,
+    upload_file: str | None,
+) -> None:
     def httpx_factory(headers=None, timeout=None, auth=None):
         merged_headers = {
             "User-Agent": "Mozilla/5.0",
@@ -136,6 +154,11 @@ async def main(tool: str, duration: int, probe: bool, bearer_token: str | None, 
                 await run_slow_task(client, duration)
             elif tool == "choose_action":
                 await run_choose_action(client)
+            elif tool == "receive_file":
+                if not upload_file:
+                    print("receive_file requires --upload-file PATH")
+                    return
+                await run_receive_file(client, upload_file)
             else:
                 await run_generic_tool(client, tool)
         except ToolError as exc:
@@ -161,6 +184,10 @@ if __name__ == "__main__":
         default=DEFAULT_SERVER_URL,
         help="Override MCP server URL (default SERVER_URL env or http://127.0.0.1:8000/mcp)",
     )
+    parser.add_argument(
+        "--upload-file",
+        help="Local file path to send to the receive_file tool",
+    )
 
     args = parser.parse_args()
     asyncio.run(
@@ -170,5 +197,6 @@ if __name__ == "__main__":
             probe=args.probe,
             bearer_token=args.bearer_token,
             server_url=args.server_url,
+            upload_file=args.upload_file,
         )
     )

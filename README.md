@@ -53,6 +53,25 @@ CLOUDFARE APPROACH: USE PROXY TO RUN CODE IN SANDBOX
 https://blog.cloudflare.com/code-mode/
 https://github.com/jx-codes/lootbox
 
+node sandbox_executor.js
+Sandbox Executor (Node.js) running on port 8080
+
+python proxy.py --script "console.log('Sandbox started'); const output = { mcp_call: { tool: 'hello_name', arguments: { name:'Cloudflare' } } }; output;"
+
+OR
+
+python proxy.py --script test_sandbox.js
+
+  1. `proxy.py` reads test_sandbox.js.
+   2. `proxy.py` POSTs the code to `sandbox_executor.js` (running on port 8080).
+   3. `sandbox_executor.js` runs it in a vm context, captures the logs (Initialization, platform info), and returns the final object.
+   4. `proxy.py` prints the logs and the final result.
+   5. `proxy.py` notices the mcp_call instruction, connects to the MCP Server (on port 1338), and calls
+      hello_name(name="Sandboxed-User").
+   6. `proxy.py` prints the final greeting from the server.
+
+
+
 ## Blaxel
 ### Create and test Docker image
 Still in repo's root: run uv lock

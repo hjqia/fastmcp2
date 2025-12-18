@@ -8,24 +8,37 @@ uv pip install -e .    (this should create a venv if none exists)
 ### Run the server and the client locally
 python src/http_mcp_server.py   (listens at port 8000 by default)
 
-To probe server connection:
+#### To probe server connection:
 python src/http_mcp_client.py --probe
 python src/http_mcp_client.py --probe --bearer-token  $BEARER_TOKEN
 
 (bearer-token flag could be required for all the below commands when connecting to remote services such as Blaxel)
 
-To list server tools:
+#### To list server tools:
 python src/ttp_mcp_client.py --tool list
 
-To run a specific tool:
+#### To run a specific tool:
 python src/http_mcp_client.py --tool slow_task --duration 5
 or,
 python src/http_mcp_client.py --tool choose_action
 
-To upload a local file:
+#### To upload a local file:
 python src/http_mcp_client.py --tool receive_file --upload-file /path/to/file.ext
 
 The `receive_file` tool accepts an MCP resource attachment (embedded resource or resource link). Uploaded files are stored in `/tmp/mcp_uploads` by default; set `UPLOAD_DIR` to change where files are written.
+
+
+#### To execute code:
+
+python src/http_mcp_client.py --tool run_python --script "import os; print(os.getcwd())"
+
+Run a file:
+
+Create a dummy script
+echo "print('Hello from file!')" > test_script.py
+python src/http_mcp_client.py --tool run_python --script test_script.py
+
+
 
 ## Blaxel
 ### Create and test Docker image
@@ -49,6 +62,7 @@ You can monitor instance using:
 bl logs functions fastmcp2 -f   (-f for continuous logging)
 
 ### Test
-export BEARER_TOKEN=""
+unset BEARER_TOKEN
+export BEARER_TOKEN='blahblahblah"
 export SERVER_URL="https://run.blaxel.ai/momrose/functions/fastmcp2/mcp"
 python src/ttp_mcp_client.py --tool list --bearer-token  $BEARER_TOKEN

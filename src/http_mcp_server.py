@@ -8,6 +8,7 @@ import asyncio
 import base64
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Annotated
 from urllib.parse import urlparse
@@ -101,9 +102,27 @@ async def receive_file(
     return f"Saved {destination} ({mime_type}, {destination.stat().st_size} bytes)"
 
 
+@mcp.tool
+async def run_python(script: Annotated[str, "Python script to execute"]) -> str:
+    """Run a Python script and return the output."""
+    process = await asyncio.create_subprocess_exec(
+        sys.executable, "-c", script,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await process.communicate()
+    output = stdout.decode()
+    print(f'script output: {output}')
+    if stderr:
+        output += f"\nStderr: {stderr.decode()}"
+    return output
+
+
 def main() -> None:
     host = os.getenv("HOST", "0.0.0.0")
     port = os.getenv("PORT", 1338)
+    if isinstance(port, str):
+        port = int(port)
     mcp.run(transport="http", host=host, port=port)
 
 

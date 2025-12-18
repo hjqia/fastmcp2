@@ -99,6 +99,25 @@ async def run_receive_file(client: Client, path: str) -> None:
     print("receive_file result:", result)
 
 
+async def run_run_python(client: Client, script: str) -> None:
+    """Call the run_python tool."""
+    if not script:
+        raise ValueError("Script content is required for run_python")
+    
+    # Check if script is a file path
+    if os.path.exists(script):
+        try:
+            with open(script, "r") as f:
+                script_content = f.read()
+            print(f"Reading script from file: {script}")
+            script = script_content
+        except Exception as e:
+            print(f"Warning: Could not read file '{script}', treating as raw code. Error: {e}")
+
+    result = await client.call_tool("run_python", {"script": script})
+    print("run_python result:\n", result)
+
+
 async def main(
     tool: str,
     duration: int,
@@ -106,6 +125,7 @@ async def main(
     bearer_token: str | None,
     server_url: str,
     upload_file: str | None,
+    script: str | None,
 ) -> None:
     def httpx_factory(headers=None, timeout=None, auth=None):
         merged_headers = {
@@ -159,6 +179,11 @@ async def main(
                     print("receive_file requires --upload-file PATH")
                     return
                 await run_receive_file(client, upload_file)
+            elif tool == "run_python":
+                if not script:
+                    print("run_python requires --script 'code' or --script path/to/file.py")
+                    return
+                await run_run_python(client, script)
             else:
                 await run_generic_tool(client, tool)
         except ToolError as exc:
@@ -188,6 +213,10 @@ if __name__ == "__main__":
         "--upload-file",
         help="Local file path to send to the receive_file tool",
     )
+    parser.add_argument(
+        "--script",
+        help="Python script content or file path for the run_python tool",
+    )
 
     args = parser.parse_args()
     asyncio.run(
@@ -198,5 +227,6 @@ if __name__ == "__main__":
             bearer_token=args.bearer_token,
             server_url=args.server_url,
             upload_file=args.upload_file,
+            script=args.script,
         )
     )

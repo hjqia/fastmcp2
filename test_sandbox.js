@@ -15,13 +15,13 @@ const timestamp = new Date().toISOString();
 
 console.log(`Running on ${platform} at ${timestamp}`);
 
-// Internal logic: decide which name to use
+// LLM who created this code or the same current code decides which name to use
 const userName = "Sandboxed-User";
 
 console.log("Logic complete. Requesting MCP tool call via Proxy...");
 
-// The Proxy contract: the last expression evaluated should be the result object
-// If 'mcp_call' is present, the Proxy will execute it.
+// LLM who created this code or the same current code decides which tool to use
+// In The Proxy script: the last expression evaluated by the executor script is the result object that is equal to this expression
 ({
     status: "success",
     meta: {
@@ -35,3 +35,4 @@ console.log("Logic complete. Requesting MCP tool call via Proxy...");
         }
     }
 });
+// If 'mcp_call' is present, the Proxy will execute it using tool (name) and arguments.
